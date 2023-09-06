@@ -1,0 +1,40 @@
+<odoo>
+    <data>
+        <template id="report_invoice_cheque_inherit" inherit_id="account.report_invoice_document">
+            <xpath expr="//div[@class='page']/p[@name='payment_communication']" position="before">
+                <!-- Ajouter la liste des chèques -->
+                <t t-if="o.cheque_ids">
+                    <div class="o_report_cheques_section">
+                        <h2>Liste des Chèques</h2>
+                        <table class="table table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>Numéro</th>
+                                    <th>Date</th>
+                                    <th>État</th>
+                                    <th>Montant</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o.cheque_ids" t-as="cheque">
+                                    <td>
+                                        <span t-field="cheque.number"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="cheque.date"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="cheque.state"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="cheque.amount"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </xpath>
+        </template>
+    </data>
+</odoo>

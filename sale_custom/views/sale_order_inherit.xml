@@ -1,0 +1,108 @@
+<odoo>
+    <data>
+        <record id="view_vendeur_tree" model="ir.ui.view">
+            <field name="name">vendeur.tree</field>
+            <field name="model">sale_custom.vendeur</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name_or"/>
+                    <field name="magasin"/>
+                </tree>
+            </field>
+        </record>
+        <record id="view_vendeur_form" model="ir.ui.view">
+            <field name="name">vendeur.form</field>
+            <field name="model">sale_custom.vendeur</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="name_or"/>
+                        <field name="magasin"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="view_sale_order_form_inherit" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/header/button[@name='action_confirm']" position="after">
+                    <button name="create_invoice_from_quotation" string="Créer une facture comptabilisé" type="object"
+                            class="oe_highlight"/>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="before">
+                    <field name="vendeur"/>
+                </xpath>
+            </field>
+        </record>
+        <!-- Define an action for the Vendeur model -->
+        <record id="action_vendeur" model="ir.actions.act_window">
+            <field name="name">Vendeurs</field>
+            <field name="res_model">sale_custom.vendeur</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+        <record id="view_account_invoice_form_inherit" model="ir.ui.view">
+            <field name="name">account.invoice.form.inherit</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/notebook/page[@id='invoice_tab']" position="after">
+                    <page id="invoice_cheques" string="Chèques" name="invoice_cheques">
+                        <field name="cheque_ids" mode="tree">
+                            <tree editable="bottom" string="Chèques"
+                                  default_order="number, date desc, state desc, amount">
+                                <field name="number"/>
+                                <field name="date"/>
+                                <field name="state"/>
+                                <field name="amount"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+        <record id="view_cheque_tree" model="ir.ui.view">
+            <field name="name">cheque.tree</field>
+            <field name="model">sale_custom.cheque</field>
+            <field name="arch" type="xml">
+                <tree edit="false" create="false" delete="false">
+                    <field name="number"/>
+                    <field name="date"/>
+                    <field name="state"/>
+                    <field name="amount"/>
+                    <field name="invoice_id"/>
+                    <field name="client"  string="Client"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_cheque_search" model="ir.ui.view">
+            <field name="name">cheque.search.view</field>
+            <field name="model">sale_custom.cheque</field>
+            <field name="arch" type="xml">
+                <search string="Chèques">
+                    <field name="date"/>
+                    <field name="state"/>
+                    <filter name="etat" string="État" domain="[('state', '=', 'issued')]"/>
+                </search>
+            </field>
+        </record>
+        <record id="action_cheque_search" model="ir.actions.act_window">
+            <field name="name">Chèques</field>
+            <field name="res_model">sale_custom.cheque</field>
+            <field name="view_mode">tree,search</field>
+            <field name="context">{'search_default_state': 'issued'} </field>
+            <field name="view_id" ref="sale_custom.view_cheque_search"/>
+            <field name="search_view_id" ref="sale_custom.view_cheque_search"/>
+
+        </record>
+        <menuitem id="menu_invoicing_submenu_cheque" name="Chèques"
+                  parent="account.menu_finance"
+                  sequence="20"
+                  action="action_cheque_search"/>
+    </data>
+</odoo>
+
